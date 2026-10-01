@@ -31,13 +31,44 @@ const app = express();
 // CORS
 // ==========================================
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+
+  "https://task-flow-omega-orpin.vercel.app",
+  "https://task-flow-k8e9h51t5-atharv-s-projects13.vercel.app",
+  "https://task-flow-git-main-atharv-s-projects13.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-    ],
+    origin: function (origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+
     credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
@@ -98,8 +129,6 @@ app.use("/api", activityRoutes);
 
 // ==========================================
 // ADMIN
-// IMPORTANT
-// /api/admin/stats
 // ==========================================
 
 app.use("/api/admin", adminRoutes);
